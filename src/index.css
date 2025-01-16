@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+html[data-theme='black'] .logo-light {
+    display: none;
+  }
+  html[data-theme='light'] .logo-dark {
+    display: none;
+  }
+  html[data-theme='black'] {
+    --rounded-box: 0.5rem; /* Rounded corners for boxed elements */
+    --rounded-btn: 0.5rem; /* Rounded corners for buttons */
+    --rounded-badge: 0.5rem; /* Rounded corners for badges */
+  }
+  

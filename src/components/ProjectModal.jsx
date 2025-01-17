@@ -221,7 +221,7 @@ const ProjectModal = ({ project, onClose }) => {
                     {project.ProductsAndServices.map((item) => (
                       <tr key={item.id}>
                         <td>{item.name}</td>
-                        <td>${item.costperunit.toFixed(2)}</td>
+                        <td>{item.costperunit !== undefined ? item.costperunit.toFixed(2) : 'N/A'}</td>
                         <td>{item.quantity}</td>
                         <td>{item.reason}</td>
                         <td>

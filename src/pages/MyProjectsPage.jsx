@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import useProjects from '../hooks/useProjects';
+// Remove the ProjectCard import
+// import ProjectCard from '../components/ProjectCard';
 
 const MyProjectsPage = () => {
   const { user, isAuthenticated } = useAuth0();
@@ -28,11 +30,15 @@ const MyProjectsPage = () => {
       );
 
       setMyProjects(filtered);
+      console.log('My Projects:', filtered); // Debug log
     }
   }, [loading, isAuthenticated, user, projects]);
 
   if (loading) return <div>Loading your projects...</div>;
   if (error) return <div>Error loading projects: {error.message}</div>;
+
+  // Add debug log to check myProjects state
+  console.log('Rendered My Projects:', myProjects); // New Debug log
 
   return (
     <div className="max-w-5xl mx-auto py-12 px-4 space-y-6">
@@ -42,20 +48,16 @@ const MyProjectsPage = () => {
       </p>
       <div className="flex flex-wrap gap-6">
         {myProjects.map((p) => (
-          <div key={p.id} className="card w-72 bg-base-100 shadow-xl rounded-xl">
-            <figure className="h-48 overflow-hidden">
-              <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
-            </figure>
-            <div className="card-body px-4 py-3 space-y-2">
-              <h3 className="card-title text-lg font-semibold">{p.title}</h3>
-              <p className="text-sm text-base-content/70">{p.description}</p>
-              <button
-                className="btn btn-primary btn-sm mt-2"
-                onClick={() => alert(`Request edit for project: ${p.title}`)}
-              >
-                Request Edit
-              </button>
-            </div>
+          // Replace ProjectCard with a simple div or your preferred component
+          <div key={p.id} className="bg-base-100 shadow-xl rounded-xl p-4">
+            <h3 className="text-lg font-semibold">{p.title}</h3>
+            <p className="text-base-content/70">{p.description}</p>
+            <button
+              onClick={() => alert(`Request edit for project: ${p.title}`)}
+              className="btn btn-primary mt-2"
+            >
+              Request Edit
+            </button>
           </div>
         ))}
       </div>

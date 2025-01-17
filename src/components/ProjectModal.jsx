@@ -54,23 +54,25 @@ const GlowingContainer = styled(motion.div)`
   `}
 `;
 
-const ProjectModal = ({ project, onClose }) => { // Remove productsAndServices from props
-  // We store a local state to only enable glow after the opening animation completes
+const ProjectModal = ({ project, onClose }) => {
+  console.log('ProjectModal Props:', project); // Debug log
   const [glowActive, setGlowActive] = useState(false);
 
   if (!project) return null; // no project => no modal
 
-  const updatedDate = new Date(project.lastUpdated.seconds * 1000).toLocaleDateString(undefined, { // Adjust timestamp handling
+  const updatedDate = new Date(project.lastUpdated.seconds * 1000).toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
 
-  // If it’s Project of the Year, show the glow only after onAnimationComplete
   const shouldGlow = glowActive && project.isProjectOfTheYear;
 
-  console.log('Project Modal - Description:', project.description); // Debugging log
-  console.log('Project Modal - Services:', project.services); // New debugging log
+  console.log('Project Modal - Title:', project.title); // New Debug log
+  console.log('Project Modal - Description:', project.description); // Existing Debug log
+  console.log('Project Modal - Services:', project.ProductsAndServices); // Existing Debug log
+  console.log('Project Modal - Technologies:', project.technologies); // New Debug log
+  console.log('Project Modal - Creators:', project.creators); // New Debug log
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -120,8 +122,8 @@ const ProjectModal = ({ project, onClose }) => { // Remove productsAndServices f
             <div>
               <h3 className="text-3xl font-semibold mb-2">{project.title}</h3>
               <p className="text-base text-base-content/80 leading-relaxed">
-                {project.detailInfo ? (
-                  project.detailInfo
+                {project.description ? (
+                  project.description
                 ) : (
                   'No detail info available.'
                 )}
@@ -202,23 +204,41 @@ const ProjectModal = ({ project, onClose }) => { // Remove productsAndServices f
             )}
 
             {/* Products and Services */}
-            {Array.isArray(project.services) && project.services.length > 0 ? ( // Add Array.isArray check
+            {Array.isArray(project.ProductsAndServices) && project.ProductsAndServices.length > 0 ? (
               <div>
                 <h4 className="text-xl font-semibold mb-2">Products and Services</h4>
-                <ul className="list-disc list-inside">
-                  {project.services.map((item) => (
-                    <li key={item.id}>
-                      <strong>Name:</strong> {item.name}<br />
-                      <strong>Cost per Unit:</strong> ${item.costperunit.toFixed(2)}<br />
-                      <strong>Quantity:</strong> {item.quantity}<br />
-                      <strong>Reason:</strong> {item.reason}<br />
-                      <strong>Link:</strong> <a href={item.link} target="_blank" rel="noopener noreferrer">{item.link}</a>
-                    </li>
-                  ))}
-                </ul>
+                <table className="table w-full">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Cost per Unit</th>
+                      <th>Quantity</th>
+                      <th>Reason</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {project.ProductsAndServices.map((item) => (
+                      <tr key={item.id}>
+                        <td>{item.name}</td>
+                        <td>${item.costperunit.toFixed(2)}</td>
+                        <td>{item.quantity}</td>
+                        <td>{item.reason}</td>
+                        <td>
+                          <button
+                            onClick={() => window.open(item.link, '_blank')}
+                            className="btn btn-sm btn-primary"
+                          >
+                            Learn More
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             ) : (
-              <p>No services available for this project.</p> // Single message when no services
+              <p>No services available for this project.</p>
             )}
 
             {/* Creators */}
@@ -228,7 +248,7 @@ const ProjectModal = ({ project, onClose }) => { // Remove productsAndServices f
                 <div className="space-y-4">
                   {project.creators.map(creator => (
                     <div
-                      key={creator.id} // Changed from index to creator.id for uniqueness
+                      key={creator.id}
                       className="p-4 bg-base-50 rounded-lg flex items-start space-x-4 shadow-sm"
                     >
                       <img

@@ -8,6 +8,8 @@ function NavBar({ user, isAuthenticated, logout, loginWithRedirect }) {
     logout({ logoutParams: { returnTo: window.location.origin } });
   };
 
+  console.log('NavBar - Authenticated User ID:', isAuthenticated ? user.sub.replace(/\D/g, '') : 'Not Authenticated'); // Debug log
+
   return (
     <div className="navbar bg-base-100">
       <div className="flex-1">
@@ -34,11 +36,11 @@ function NavBar({ user, isAuthenticated, logout, loginWithRedirect }) {
         <div className="dropdown dropdown-end">
           {isAuthenticated ? (
             <>
-              <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+              <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                 <div className="w-10 rounded-full">
                   <img src={user.picture} alt="User Avatar" />
                 </div>
-              </div>
+              </label> {/* Changed from div to label for better accessibility */}
               <ul
                 tabIndex={0}
                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
@@ -50,10 +52,16 @@ function NavBar({ user, isAuthenticated, logout, loginWithRedirect }) {
                   </Link>
                 </li>
                 <li><Link to="/my-projects">My Projects</Link></li>
+                {/* Add Inspiration Bin link */}
                 <li>
-                  <button onClick={handleLogout}>Logout</button>
+                  <Link to="/inspirationbin">Inspiration Bin</Link>
                 </li>
-              </ul>
+                <li>
+                  <button onClick={handleLogout} className="w-full text-left">
+                    Logout
+                  </button>
+                </li>
+              </ul> {/* Ensure this closing tag exists and is correctly placed */}
             </>
           ) : (
             <button className="btn btn-primary" onClick={() => loginWithRedirect()}>

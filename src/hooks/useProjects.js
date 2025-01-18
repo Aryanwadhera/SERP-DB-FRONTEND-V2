@@ -15,6 +15,7 @@ const useProjects = () => {
 
         const projectsData = projectsSnapshot.docs.map(doc => {
           const data = doc.data();
+          console.log('useProjects - raw project data:', data); // Added debug log
           return { 
             id: doc.id, 
             ...data,
@@ -88,13 +89,14 @@ const useProjects = () => {
           console.log(`Final Project Data for ID ${project.id}:`, {
             ...project,
             creators: validCreators,
-            services: validServices,
+            ProductsAndServices: validServices,
           }); // Debug log
 
           return {
             ...project,
             creators: validCreators,
-            services: validServices,
+            // Rename 'services' to 'ProductsAndServices'
+            ProductsAndServices: validServices,
           };
         }));
 

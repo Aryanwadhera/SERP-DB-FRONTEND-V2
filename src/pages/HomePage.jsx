@@ -29,6 +29,12 @@ const HomePage = () => {
   // Show/hide filters on mobile
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
+  // Debug log to check selected project data
+  const handleProjectSelect = (project) => {
+    console.log('Selected Project:', project);
+    setSelectedProject(project);
+  };
+
   // 1) If still loading => new Loader
   if (loading) {
     return (
@@ -150,7 +156,7 @@ const HomePage = () => {
                 scale: 1.02,
                 boxShadow: '0 10px 30px -10px rgba(0,0,0,0.2)',
               }}
-              onClick={() => setSelectedProject(projectOfTheYear)}
+              onClick={() => handleProjectSelect(projectOfTheYear)}
             >
               <figure className="relative lg:w-1/3 min-w-[150px] overflow-hidden h-48 lg:h-auto">
                 <motion.img
@@ -351,7 +357,7 @@ const HomePage = () => {
                     scale: 1.02,
                     boxShadow: '0 10px 30px -10px rgba(0,0,0,0.2)',
                   }}
-                  onClick={() => setSelectedProject(project)}
+                  onClick={() => handleProjectSelect(project)}
                 >
                   <figure className="h-32 overflow-hidden">
                     <motion.img

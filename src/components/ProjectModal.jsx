@@ -1,7 +1,11 @@
 // src/components/ProjectModal.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
+import { FaBox } from 'react-icons/fa';
+import { useAuth0 } from '@auth0/auth0-react';
+import { doc, getDocs, collection, query, where, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { db } from '../firebase';
 
 // A styled container that applies glow if props.glow === true
 const GlowingContainer = styled(motion.div)`
@@ -57,6 +61,24 @@ const GlowingContainer = styled(motion.div)`
 const ProjectModal = ({ project, onClose }) => {
   console.log('ProjectModal Props:', project); // Debug log
   const [glowActive, setGlowActive] = useState(false);
+  const { user } = useAuth0();
+  const [isInBin, setIsInBin] = useState(false);
+
+  useEffect(() => {
+    const checkIfInBin = async () => {
+      if (!user || !project?.id) return;
+      const strippedSub = user.sub.replace(/.*\|/, '');
+      const q = query(collection(db, 'creators'), where('auth0Id', '==', strippedSub));
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        const creatorData = snapshot.docs[0].data();
+        const binArray = creatorData['Inspiration-bin'] || [];
+        // Check if current project is in bin
+        setIsInBin(binArray.some(ref => ref.id === project.id));
+      }
+    };
+    checkIfInBin();
+  }, [user, project]);
 
   if (!project) return null; // no project => no modal
 
@@ -73,6 +95,33 @@ const ProjectModal = ({ project, onClose }) => {
   console.log('Project Modal - Services:', project.ProductsAndServices); // Existing Debug log
   console.log('Project Modal - Technologies:', project.technologies); // New Debug log
   console.log('Project Modal - Creators:', project.creators); // New Debug log
+
+  const toggleInspirationBin = async () => {
+    try {
+      if (!user) return;
+      const strippedSub = user.sub.replace(/.*\|/, '');
+      const q = query(collection(db, 'creators'), where('auth0Id', '==', strippedSub));
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        const creatorDocSnap = snapshot.docs[0];
+        const creatorRef = doc(db, 'creators', creatorDocSnap.id);
+
+        if (isInBin) {
+          await updateDoc(creatorRef, {
+            'Inspiration-bin': arrayRemove(doc(db, 'Projects', project.id))
+          });
+          setIsInBin(false);
+        } else {
+          await updateDoc(creatorRef, {
+            'Inspiration-bin': arrayUnion(doc(db, 'Projects', project.id))
+          });
+          setIsInBin(true);
+        }
+      }
+    } catch (err) {
+      console.error('Error adding/removing project to/from Inspiration Bin:', err);
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -221,7 +270,7 @@ const ProjectModal = ({ project, onClose }) => {
                     {project.ProductsAndServices.map((item) => (
                       <tr key={item.id}>
                         <td>{item.name}</td>
-                        <td>{item.costperunit !== undefined ? item.costperunit.toFixed(2) : 'N/A'}</td>
+                        <td>{item.costperunit !== undefined ? parseFloat(item.costperunit).toFixed(2) : 'N/A'}</td>
                         <td>{item.quantity}</td>
                         <td>{item.reason}</td>
                         <td>
@@ -271,14 +320,13 @@ const ProjectModal = ({ project, onClose }) => {
             </div>
 
             <div className="pt-6 flex justify-between items-center">
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-sm btn-primary"
+              <button
+                onClick={toggleInspirationBin}
+                className="btn btn-sm btn-primary gap-2"
               >
-                View Project
-              </a>
+                <FaBox />
+                {isInBin ? 'Remove from Inspiration Bin' : 'Add to Inspiration Bin'}
+              </button>
               <button className="btn btn-sm btn-ghost" onClick={onClose}>
                 Close
               </button>

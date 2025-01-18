@@ -63,15 +63,19 @@ const InspirationBinPage = ({ setSelectedProject }) => {
         <FaBox className="text-blue-500 text-3xl mr-2" />
         <h1 className="text-3xl font-bold text-blue-500">Inspiration Bin</h1>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => (
-          <ProjectCard 
-            key={project.id} 
-            project={project} 
-            onClick={() => setSelectedProject(project)} 
-          />
-        ))}
-      </div>
+      {projects.length === 0 ? (
+        <p className="text-center text-gray-500">Your Inspiration Bin is empty.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.map((project) => (
+            <ProjectCard 
+              key={project.id} 
+              project={project} 
+              onClick={() => setSelectedProject(project)} 
+            />
+          ))}
+        </div>
+      )}
       {/* Add your JSX content here */}
     </div>
   );
